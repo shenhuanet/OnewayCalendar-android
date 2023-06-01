@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * 690 × 1000 jpg
+ * 690 × 1000 jpg
  * Created by shenhua on 2018/11/22.
  *
  * @author shenhua
