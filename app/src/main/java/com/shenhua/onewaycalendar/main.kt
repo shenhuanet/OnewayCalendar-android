@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.icu.text.SimpleDateFormat
 import android.os.Build
@@ -29,6 +30,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 import java.util.Locale
+import kotlin.random.Random
 
 /**
  * 690 × 1000 jpg
@@ -75,9 +77,7 @@ class CalendarWidget : GlanceAppWidget() {
                 .listener { _, result ->
                     val drawable = result.drawable
                     if (drawable is BitmapDrawable) {
-                        FileOutputStream(file).use { out ->
-                            drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
-                        }
+                        handleBitmap(file, drawable.bitmap.copy(Bitmap.Config.ARGB_8888, false))
                         context.sendBroadcast(Intent("android.appwidget.action.APPWIDGET_UPDATE"))
                     }
                 }
@@ -89,6 +89,32 @@ class CalendarWidget : GlanceAppWidget() {
         } else {
             return BitmapFactory.decodeFile(file.path)
         }
+    }
+
+    private fun handleBitmap(file: File, bitmap: Bitmap) {
+        val tintColor = randomColor()
+        for (i in 0 until bitmap.width) {
+            for (j in 0 until bitmap.height) {
+                val color = bitmap.getPixel(i, j)
+                val r = (color shr 16) and 0xff
+                val g = (color shr 8) and 0xff
+                val b = color and 0xff
+                val hold = 50
+                if (r < hold && g < hold && b < hold) {
+                    bitmap.setPixel(i, j, tintColor)
+                }
+            }
+        }
+        FileOutputStream(file).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
+        }
+    }
+
+    private fun randomColor(): Int {
+        val colors = listOf(
+            "#ffc3ab", "#a9ccff", "#fbd1f1", "#ffc8e8", "#fb88a7", "#f7656b", "#aa92d4"
+        )
+        return Color.parseColor(colors[Random.nextInt(colors.size)])
     }
 }
 
