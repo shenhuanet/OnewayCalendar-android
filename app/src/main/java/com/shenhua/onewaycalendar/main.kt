@@ -85,6 +85,9 @@ class CalendarWidget : GlanceAppWidget() {
                 .run { context.imageLoader.enqueue(this) }
             val lastFile =
                 File(context.filesDir, "images/${sdf.format(Date().time - 86400000)}.jpg")
+            if (!lastFile.exists()) {
+                return BitmapFactory.decodeResource(context.resources, R.drawable.img)
+            }
             return BitmapFactory.decodeFile(lastFile.path)
         } else {
             return BitmapFactory.decodeFile(file.path)
