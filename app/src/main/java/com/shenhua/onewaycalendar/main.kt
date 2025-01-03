@@ -67,6 +67,7 @@ class CalendarWidget : GlanceAppWidget() {
                     provider = ImageProvider(imageBitmap(LocalContext.current)),
                     contentDescription = "",
                     modifier = GlanceModifier.fillMaxHeight()
+                        .appWidgetBackgroundCornerRadius()
                         .clickable(actionRunCallback<RefreshAction>())
                 )
             }
@@ -176,6 +177,6 @@ fun Context.source(): Pair<String, File> {
     val date = sdf.format(Date())
     val file = File(filesDir, "images/${date}.jpg")
     val suffix = "${date.substring(0, 4)}/${date.substring(4)}.jpg"
-    val url = "http://img.owspace.com/Public/uploads/Download/${suffix}"
+    val url = "https://img.owspace.com/Public/uploads/Download/${suffix}"
     return url to file
 }
