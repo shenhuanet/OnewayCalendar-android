@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.shenhua.onewaycalendar"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 2024
         versionName = "2.0.0"
@@ -53,7 +53,8 @@ dependencies {
     implementation(libs.remoteviews)
     implementation(libs.coil)
     implementation(libs.material)
-    implementation(libs.glide)
+    implementation(libs.okhttp)
+    implementation(libs.workmanager)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

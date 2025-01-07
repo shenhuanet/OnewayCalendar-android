@@ -49,6 +49,16 @@ import kotlin.random.Random
 class CalendarAppWidgetProvider : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget
         get() = CalendarWidget()
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        DownloadWork.enqueue(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        super.onDisabled(context)
+        DownloadWork.cancel(context)
+    }
 }
 
 class CalendarWidget : GlanceAppWidget() {
@@ -79,25 +89,7 @@ class CalendarWidget : GlanceAppWidget() {
         if (file.exists()) {
             return BitmapFactory.decodeFile(file.path)
         }
-        ImageRequest.Builder(context)
-            .data(url)
-            .listener { _, result ->
-                val drawable = result.drawable
-                if (drawable is BitmapDrawable) {
-                    FileOutputStream(file).use { out ->
-                        drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
-                    }
-                }
-            }
-            .build()
-            .run { context.imageLoader.enqueue(this) }
-        val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
-        val lastFile =
-            File(context.filesDir, "images/${sdf.format(Date().time - 86400000)}.jpg")
-        if (!lastFile.exists()) {
-            return BitmapFactory.decodeResource(context.resources, R.drawable.img)
-        }
-        return BitmapFactory.decodeFile(lastFile.path)
+        return BitmapFactory.decodeResource(context.resources, R.drawable.img)
     }
 
     private fun handleBitmap(file: File, bitmap: Bitmap) {
@@ -140,7 +132,7 @@ class RefreshAction : ActionCallback {
     override suspend fun onAction(
         context: Context, glanceId: GlanceId, parameters: ActionParameters
     ) {
-        context.download(glanceId)
+//        context.download(glanceId)
     }
 }
 
