@@ -4,39 +4,30 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.icu.text.SimpleDateFormat
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
-import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
 import androidx.glance.layout.Column
 import androidx.glance.layout.fillMaxHeight
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
-import coil.imageLoader
-import coil.request.ImageRequest
 import com.shenhua.onewaycalendar.theme.GlanceTheme
 import java.io.File
 import java.io.FileOutputStream
 import java.util.Date
 import java.util.Locale
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 import kotlin.random.Random
 
 /**
@@ -78,7 +69,7 @@ class CalendarWidget : GlanceAppWidget() {
                     contentDescription = "",
                     modifier = GlanceModifier.fillMaxHeight()
                         .appWidgetBackgroundCornerRadius()
-                        .clickable(actionRunCallback<RefreshAction>())
+                        .clickable(actionStartActivity<MainActivity>())
                 )
             }
         }
@@ -126,42 +117,6 @@ fun GlanceModifier.appWidgetBackgroundCornerRadius(): GlanceModifier {
         cornerRadius(16.dp)
     }
     return this
-}
-
-class RefreshAction : ActionCallback {
-    override suspend fun onAction(
-        context: Context, glanceId: GlanceId, parameters: ActionParameters
-    ) {
-//        context.download(glanceId)
-    }
-}
-
-suspend fun Context.download(glanceId: GlanceId) {
-    val (url, file) = source()
-    if (file.exists()) {
-        updateAppWidgetState(this, glanceId) { it.clear() }
-        CalendarWidget().update(this, glanceId)
-        return
-    }
-    val result = suspendCoroutine {
-        ImageRequest.Builder(this)
-            .data(url)
-            .listener { _, result ->
-                val drawable = result.drawable
-                if (drawable is BitmapDrawable) {
-                    FileOutputStream(file).use { out ->
-                        drawable.bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out)
-                    }
-                }
-                it.resume(true)
-            }
-            .build()
-            .run { context.imageLoader.enqueue(this) }
-    }
-    if (result) {
-        updateAppWidgetState(this, glanceId) { it.clear() }
-        CalendarWidget().update(this, glanceId)
-    }
 }
 
 fun Context.source(): Pair<String, File> {
