@@ -16,13 +16,10 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.appWidgetBackground
 import androidx.glance.appwidget.cornerRadius
-import androidx.glance.background
 import androidx.glance.layout.Column
-import androidx.glance.layout.fillMaxHeight
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
 import com.shenhua.onewaycalendar.theme.GlanceTheme
 import java.io.File
 import java.io.FileOutputStream
@@ -59,16 +56,14 @@ class CalendarWidget : GlanceAppWidget() {
             Column(
                 modifier = GlanceModifier
                     .fillMaxSize()
-                    .padding(8.dp)
-                    .appWidgetBackground()
-                    .background(GlanceTheme.colors.background)
-                    .appWidgetBackgroundCornerRadius()
+                    .cornerRadius(30.dp)
             ) {
                 Image(
                     provider = ImageProvider(imageBitmap(LocalContext.current)),
                     contentDescription = "",
-                    modifier = GlanceModifier.fillMaxHeight()
-                        .appWidgetBackgroundCornerRadius()
+                    contentScale = ContentScale.Crop,
+                    modifier = GlanceModifier
+                        .cornerRadius(30.dp)
                         .clickable(actionStartActivity<MainActivity>())
                 )
             }
